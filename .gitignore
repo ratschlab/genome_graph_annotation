@@ -1,0 +1,8 @@
+build
+tests/data/*dump_*
+*.DS_Store
+*._*
+.*.swp
+.ipynb_checkpoints
+*lsf.o*
+.history

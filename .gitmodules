@@ -1,0 +1,32 @@
+[submodule "external-libraries/libmaus2"]
+	path = external-libraries/libmaus2
+	url = https://github.com/akahles/libmaus2.git
+	ignore = dirty
+[submodule "external-libraries/caches"]
+	path = external-libraries/caches
+	url = https://github.com/karasikov/caches.git
+[submodule "external-libraries/eigen-git-mirror"]
+	path = external-libraries/eigen-git-mirror
+	url = https://github.com/eigenteam/eigen-git-mirror.git
+[submodule "external-libraries/sparsepp"]
+	path = external-libraries/sparsepp
+	url = https://github.com/greg7mdp/sparsepp
+[submodule "external-libraries/hopscotch-map"]
+	path = external-libraries/hopscotch-map
+	url = https://github.com/Tessil/hopscotch-map
+[submodule "external-libraries/sdsl-lite"]
+	path = external-libraries/sdsl-lite
+	url = https://github.com/hmusta/sdsl-lite.git
+	ignore = dirty
+[submodule "external-libraries/KMC"]
+	path = external-libraries/KMC
+	url = https://github.com/karasikov/KMC.git
+[submodule "external-libraries/tclap"]
+	path = external-libraries/tclap
+	url = https://github.com/eile/tclap.git
+[submodule "external-libraries/ordered-map"]
+	path = external-libraries/ordered-map
+	url = https://github.com/Tessil/ordered-map.git
+[submodule "external-libraries/binrel_wt"]
+	path = external-libraries/binrel_wt
+	url = https://github.com/sara-jvz/binrel_wt
