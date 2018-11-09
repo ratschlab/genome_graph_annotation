@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
 
 #include <boost/multiprecision/integer.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/functional/hash/hash.hpp>
 
 
@@ -579,7 +579,7 @@ transpose<bit_vector_dyn>(const std::vector<std::unique_ptr<bit_vector>> &matrix
 TempFile::TempFile(const std::string &tmp_dir)
       : tmp_file_name_((tmp_dir.size()
                           ? tmp_dir
-                          : boost::filesystem::temp_directory_path().string())
+                          : std::filesystem::temp_directory_path().string())
                                                 + std::string("/tmp.XXXXXX")) {
     // create a file
     int fd = mkstemp(const_cast<char*>(tmp_file_name_.c_str()));
@@ -618,8 +618,7 @@ std::ifstream& TempFile::ifstream() {
 }
 
 
-template <typename N>
-RangePartition::RangePartition(const std::vector<N> &arrangement,
+RangePartition::RangePartition(const std::vector<uint64_t> &arrangement,
                                const std::vector<size_t> &group_sizes) {
     size_t offset = 0;
     for (size_t group_size : group_sizes) {
@@ -632,24 +631,12 @@ RangePartition::RangePartition(const std::vector<N> &arrangement,
     initialize_groups_and_ranks();
 }
 
-template
-RangePartition
-::RangePartition<uint64_t>(const std::vector<uint64_t> &arrangement,
-                           const std::vector<size_t> &group_sizes);
-
-template
-RangePartition
-::RangePartition<uint32_t>(const std::vector<uint32_t> &arrangement,
-                           const std::vector<size_t> &group_sizes);
-
-
-template <typename N>
-RangePartition::RangePartition(std::vector<std::vector<N>>&& partition) {
+RangePartition::RangePartition(std::vector<std::vector<uint64_t>>&& partition) {
     partition_.reserve(partition.size());
     for (auto &group : partition) {
         partition_.push_back({});
         partition_.back().reserve(group.size());
-        for (N value : group) {
+        for (auto value : group) {
             assert(uint64_t(value) <= std::numeric_limits<T>::max());
             partition_.back().push_back(value);
         }
@@ -660,15 +647,6 @@ RangePartition::RangePartition(std::vector<std::vector<N>>&& partition) {
     assert(initialize_groups_and_ranks());
     initialize_groups_and_ranks();
 }
-
-template
-RangePartition
-::RangePartition<uint64_t>(std::vector<std::vector<uint64_t>>&&);
-
-template
-RangePartition
-::RangePartition<uint32_t>(std::vector<std::vector<uint32_t>>&&);
-
 
 bool RangePartition::initialize_groups_and_ranks() {
     uint64_t set_size = 0;

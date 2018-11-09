@@ -37,6 +37,7 @@ class ColumnCompressed : public MultiLabelEncoded<uint64_t, Label> {
 
     ~ColumnCompressed();
 
+    using MultiLabelEncoded<uint64_t, Label>::set;
     void set_labels(Index i, const VLabels &labels);
     VLabels get_labels(Index i) const;
 

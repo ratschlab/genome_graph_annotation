@@ -33,18 +33,54 @@ The figures below show the final size of two compressed binary relations
 
 ### Prerequisites
 - cmake 3.6.1
-- GNU GCC with C++17 (gcc-8 or higher)
+- GNU GCC with C++17 (gcc-8 or higher) or LLVM Clang (clang-7 or higher)
 - HTSlib
 - boost
 - folly (optional)
 
-All can be installed with `brew` or `linuxbrew`
+All can be installed with [brew](https://brew.sh) or [linuxbrew](https://linuxbrew.sh)
+
+#### For compiling with GNU GCC:
 ```
-brew tap brewsci/bio
+brew install gcc autoconf automake libtool cmake make htslib
+brew install --build-from-source boost
+(optional) brew install --build-from-source double-conversion gflags glog lz4 snappy zstd folly
+brew install gcc@8
+```
+Then set the environment variables accordingly:
+```
+echo "\
+# Use gcc-8 with cmake
+export CC=\"\$(which gcc-8)\"
+export CXX=\"\$(which g++-8)\"
+" >> $( [[ "$OSTYPE" == "darwin"* ]] && echo ~/.bash_profile || echo ~/.bashrc )
 ```
 
+#### For compiling with LLVM Clang:
+```
+brew install llvm libomp autoconf automake libtool cmake make htslib boost folly
+```
+Then set the environment variables accordingly:
+```
+echo "\
+# OpenMP
+export LDFLAGS=\"\$LDFLAGS -L$(brew --prefix libomp)/lib\"
+export CPPFLAGS=\"\$CPPFLAGS -I$(brew --prefix libomp)/include\"
+# Clang C++ flags
+export LDFLAGS=\"\$LDFLAGS -L$(brew --prefix llvm)/lib -Wl,-rpath,$(brew --prefix llvm)/lib\"
+export CPPFLAGS=\"\$CPPFLAGS -I$(brew --prefix llvm)/include\"
+export CXXFLAGS=\"\$CXXFLAGS -stdlib=libc++\"
+# Path to Clang
+export PATH=\"$(brew --prefix llvm)/bin:\$PATH\"
+# Use Clang with cmake
+export CC=\"\$(which clang)\"
+export CXX=\"\$(which clang++)\"
+" >> $( [[ "$OSTYPE" == "darwin"* ]] && echo ~/.bash_profile || echo ~/.bashrc )
+```
+
+
 ### Compile
-1. `git clone --recursive https://github.com/ratschlab/projects2018-annotation_schemes`
+1. `git clone --recursive https://github.com/ratschlab/genome_graph_annotation`
 2. make sure all submodules are downloaded: `git submodule update --init --recursive`
 3. install third-party libraries from `external-libraries/` following the corresponding istructions  
 or simply run the following script

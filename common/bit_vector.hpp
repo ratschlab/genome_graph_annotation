@@ -54,23 +54,23 @@ class bit_vector_dyn : public bit_vector {
     explicit bit_vector_dyn(const BitVector &vector);
     bit_vector_dyn(std::initializer_list<bool> init);
 
-    uint64_t rank1(uint64_t id) const;
-    uint64_t select1(uint64_t id) const;
+    uint64_t rank1(uint64_t id) const override;
+    uint64_t select1(uint64_t id) const override;
 
-    void set(uint64_t id, bool val);
+    void set(uint64_t id, bool val) override;
     void setBitQuick(uint64_t id, bool val) override;
-    bool operator[](uint64_t id) const;
-    uint64_t get_int(uint64_t id, uint32_t width) const;
+    bool operator[](uint64_t id) const override;
+    uint64_t get_int(uint64_t id, uint32_t width) const override;
 
-    void insertBit(uint64_t id, bool val);
-    void deleteBit(uint64_t id);
+    void insertBit(uint64_t id, bool val) override;
+    void deleteBit(uint64_t id) override;
 
-    bool load(std::istream &in);
-    uint64_t serialize(std::ostream &out) const;
+    bool load(std::istream &in) override;
+    uint64_t serialize(std::ostream &out) const override;
 
-    uint64_t size() const { return vector_.size(); }
+    uint64_t size() const  override { return vector_.size(); }
 
-    void call_ones(const std::function<void(uint64_t)> &callback) const;
+    void call_ones(const std::function<void(uint64_t)> &callback) const override;
 
   private:
     bit_vector_dyn(const std::vector<uint64_t> &bits_packed, size_t num_bits);
@@ -96,23 +96,23 @@ class bit_vector_stat : public bit_vector {
     bit_vector_stat& operator=(const bit_vector_stat &other);
     bit_vector_stat& operator=(bit_vector_stat&& other) noexcept;
 
-    uint64_t rank1(uint64_t id) const;
-    uint64_t select1(uint64_t id) const;
+    uint64_t rank1(uint64_t id) const override;
+    uint64_t select1(uint64_t id) const override;
 
-    void set(uint64_t id, bool val);
-    bool operator[](uint64_t id) const;
-    uint64_t get_int(uint64_t id, uint32_t width) const;
+    void set(uint64_t id, bool val) override;
+    bool operator[](uint64_t id) const override;
+    uint64_t get_int(uint64_t id, uint32_t width) const override;
 
-    void insertBit(uint64_t id, bool val);
-    void deleteBit(uint64_t id);
+    void insertBit(uint64_t id, bool val) override;
+    void deleteBit(uint64_t id) override;
 
-    bool load(std::istream &in);
-    uint64_t serialize(std::ostream &out) const;
+    bool load(std::istream &in) override;
+    uint64_t serialize(std::ostream &out) const override;
 
-    uint64_t size() const { return vector_.size(); }
+    uint64_t size() const override { return vector_.size(); }
     uint64_t num_set_bits() const override { return num_set_bits_; }
 
-    void call_ones(const std::function<void(uint64_t)> &callback) const;
+    void call_ones(const std::function<void(uint64_t)> &callback) const override;
 
     const sdsl::bit_vector& get() const { return vector_; }
 
@@ -147,24 +147,24 @@ class bit_vector_sd : public bit_vector {
     bit_vector_sd& operator=(const bit_vector_sd &other);
     bit_vector_sd& operator=(bit_vector_sd&& other) noexcept;
 
-    uint64_t rank1(uint64_t id) const;
-    uint64_t select1(uint64_t id) const;
+    uint64_t rank1(uint64_t id) const override;
+    uint64_t select1(uint64_t id) const override;
 
-    void set(uint64_t id, bool val);
-    bool operator[](uint64_t id) const;
-    uint64_t get_int(uint64_t id, uint32_t width) const;
+    void set(uint64_t id, bool val) override;
+    bool operator[](uint64_t id) const override;
+    uint64_t get_int(uint64_t id, uint32_t width) const override;
 
-    void insertBit(uint64_t id, bool val);
-    void deleteBit(uint64_t id);
+    void insertBit(uint64_t id, bool val) override;
+    void deleteBit(uint64_t id) override;
 
-    bool load(std::istream &in);
-    uint64_t serialize(std::ostream &out) const;
+    bool load(std::istream &in) override;
+    uint64_t serialize(std::ostream &out) const override;
 
-    uint64_t size() const { return vector_.size(); }
+    uint64_t size() const override { return vector_.size(); }
 
     std::vector<bool> to_vector() const override;
 
-    void call_ones(const std::function<void(uint64_t)> &callback) const;
+    void call_ones(const std::function<void(uint64_t)> &callback) const override;
 
     bool is_inverted() const { return inverted_; }
 
@@ -195,25 +195,25 @@ class bit_vector_rrr : public bit_vector {
     bit_vector_rrr& operator=(const bit_vector_rrr &other);
     bit_vector_rrr& operator=(bit_vector_rrr&& other) noexcept;
 
-    uint64_t rank1(uint64_t id) const;
+    uint64_t rank1(uint64_t id) const override;
     uint64_t select0(uint64_t id) const;
-    uint64_t select1(uint64_t id) const;
+    uint64_t select1(uint64_t id) const override;
 
-    void set(uint64_t id, bool val);
-    bool operator[](uint64_t id) const;
-    uint64_t get_int(uint64_t id, uint32_t width) const;
+    void set(uint64_t id, bool val) override;
+    bool operator[](uint64_t id) const override;
+    uint64_t get_int(uint64_t id, uint32_t width) const override;
 
-    void insertBit(uint64_t id, bool val);
-    void deleteBit(uint64_t id);
+    void insertBit(uint64_t id, bool val) override;
+    void deleteBit(uint64_t id) override;
 
-    bool load(std::istream &in);
-    uint64_t serialize(std::ostream &out) const;
+    bool load(std::istream &in) override;
+    uint64_t serialize(std::ostream &out) const override;
 
-    uint64_t size() const { return vector_.size(); }
+    uint64_t size() const override { return vector_.size(); }
 
     std::vector<bool> to_vector() const override;
 
-    void call_ones(const std::function<void(uint64_t)> &callback) const;
+    void call_ones(const std::function<void(uint64_t)> &callback) const override;
 
     const sdsl::rrr_vector<kBlockSize>& get() const { return vector_; }
 
@@ -245,24 +245,24 @@ class bit_vector_small : public bit_vector {
     bit_vector_small& operator=(const bit_vector_small &other);
     bit_vector_small& operator=(bit_vector_small&& other) = default;
 
-    uint64_t rank1(uint64_t id) const;
-    uint64_t select1(uint64_t id) const;
+    uint64_t rank1(uint64_t id) const override;
+    uint64_t select1(uint64_t id) const override;
 
-    void set(uint64_t id, bool val);
-    bool operator[](uint64_t id) const;
-    uint64_t get_int(uint64_t id, uint32_t width) const;
+    void set(uint64_t id, bool val) override;
+    bool operator[](uint64_t id) const override;
+    uint64_t get_int(uint64_t id, uint32_t width) const override;
 
-    void insertBit(uint64_t id, bool val);
-    void deleteBit(uint64_t id);
+    void insertBit(uint64_t id, bool val) override;
+    void deleteBit(uint64_t id) override;
 
-    bool load(std::istream &in);
-    uint64_t serialize(std::ostream &out) const;
+    bool load(std::istream &in) override;
+    uint64_t serialize(std::ostream &out) const override;
 
-    uint64_t size() const;
+    uint64_t size() const override;
 
     std::vector<bool> to_vector() const override;
 
-    void call_ones(const std::function<void(uint64_t)> &callback) const;
+    void call_ones(const std::function<void(uint64_t)> &callback) const override;
 
     bool is_inverted() const;
 

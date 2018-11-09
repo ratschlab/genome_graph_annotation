@@ -23,7 +23,7 @@ void DBGHash::add_sequence(const std::string &sequence,
         auto index_insert = indices_.emplace(seq_encoded.substr(i, k_),
                                              kmers_.size());
         if (index_insert.second) {
-            kmers_.push_back(index_insert.first->first.c_str());
+            kmers_.push_back(index_insert.first->first);
             if (nodes_inserted)
                 nodes_inserted->insertBit(kmers_.size() - 1, true);
         }
@@ -91,7 +91,7 @@ DBGHash::node_index DBGHash::kmer_to_node(const std::string &kmer) const {
 }
 
 std::string DBGHash::node_to_kmer(node_index i) const {
-    assert(kmers_.at(i - 1)[k_] == '\0');
+    assert(kmers_.at(i - 1).size() == k_);
     return std::string(kmers_.at(i - 1));
 }
 
@@ -120,7 +120,7 @@ bool DBGHash::load(std::istream &in) {
         load_string_number_map(in, &indices_);
         //kmers_.resize(indices_.size());
         for (auto &kmer : indices_) {
-            kmers_[kmer.second] = kmer.first.c_str();
+            kmers_[kmer.second] = kmer.first;
         }
         return true;
     } catch (...) {

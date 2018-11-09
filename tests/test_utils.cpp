@@ -151,6 +151,25 @@ TEST(Utils, RowsFromColumnsTransformerCallIndicesConcat) {
     check_indices(std::move(rct));
 }
 
+TEST(Utils, TempFileInitialize) {
+    utils::TempFile tmp;
+}
+
+TEST(Utils, TempFileOpenWrite) {
+    {
+        utils::TempFile tmp;
+        ASSERT_TRUE(tmp.ofstream().good());
+    }
+}
+
+TEST(Utils, TempFileOpenWriteRead) {
+    {
+        utils::TempFile tmp;
+        ASSERT_TRUE(tmp.ofstream().good());
+        ASSERT_TRUE(tmp.ifstream().good());
+    }
+}
+
 TEST(Utils, TempFileCheckStateFlow) {
     {
         utils::TempFile tmp;

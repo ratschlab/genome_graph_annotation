@@ -8,6 +8,17 @@ using utils::remove_suffix;
 
 namespace annotate {
 
+template <>
+const std::string RowFlatAnnotator::kFileExtension = kRowPackedExtension;
+template <>
+const std::string RainbowfishAnnotator::kFileExtension = kRainbowfishExtension;
+template <>
+const std::string BRWTCompressed<std::string>::kFileExtension = kBRWTExtension;
+template <>
+const std::string BinRelWT_sdslAnnotator::kFileExtension = kBinRelWT_sdslExtension;
+template <>
+const std::string BinRelWTAnnotator::kFileExtension = kBinRelWTExtension;
+
 
 template <class BinaryMatrixType, typename Label>
 bool
@@ -163,30 +174,14 @@ StaticBinRelAnnotator<BinaryMatrixType, Label>
     label_encoder_ = label_encoder;
 }
 
-
 template class StaticBinRelAnnotator<RowConcatenated<>, std::string>;
-template <>
-const std::string RowFlatAnnotator::kFileExtension = kRowPackedExtension;
-
 
 template class StaticBinRelAnnotator<Rainbowfish, std::string>;
-template <>
-const std::string RainbowfishAnnotator::kFileExtension = kRainbowfishExtension;
-
 
 template class StaticBinRelAnnotator<BRWT, std::string>;
-template <>
-const std::string BRWTCompressed<std::string>::kFileExtension = kBRWTExtension;
-
 
 template class StaticBinRelAnnotator<BinRelWT_sdsl, std::string>;
-template <>
-const std::string BinRelWT_sdslAnnotator::kFileExtension = kBinRelWT_sdslExtension;
-
 
 template class StaticBinRelAnnotator<BinRelWT, std::string>;
-template <>
-const std::string BinRelWTAnnotator::kFileExtension = kBinRelWTExtension;
-
 
 } // namespace annotate

@@ -50,7 +50,7 @@ class DBGHash : public DeBruijnGraph {
 
     size_t k_;
     tsl::hopscotch_map<std::string, uint64_t> indices_;
-    std::vector<const char*> kmers_;
+    std::vector<std::string> kmers_;
 
     static constexpr auto kExtension = ".hashdbg";
 };

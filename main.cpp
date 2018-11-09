@@ -1,5 +1,4 @@
 #include <iostream>
-#include <sys/resource.h>
 
 #include "unix_tools.hpp"
 #include "config.hpp"
@@ -15,8 +14,6 @@
 #include "kmc_parser.hpp"
 
 typedef annotate::MultiLabelAnnotation<uint64_t, std::string> Annotator;
-
-const size_t kMaxNumParallelReadFiles = 5;
 
 const size_t kNumCachedColumns = 10;
 

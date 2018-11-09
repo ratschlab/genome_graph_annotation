@@ -24,7 +24,7 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
     uint64_t coded_rows_set_bits = 0;
     uint64_t counter_num_set_bits = 0;
 
-    auto flush = [&](const auto &callback = [](){}) {
+    auto flush = [&](const auto &callback) {
         if (!vector_counter.size())
             return;
 
@@ -68,7 +68,7 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
 
     uint64_t rows = 0;
     SmallVector row_indices_small;
-    call_rows([&](const auto &row_indices) {
+    call_rows([&](const utils::SetBitPositions &row_indices) {
         ++rows;
         row_indices_small.assign(row_indices.begin(), row_indices.end());
         if (vector_coder.size()) {
@@ -108,32 +108,31 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
     );
 
     sdsl::bit_vector row_builder(coded_rows_size);
+    sdsl::bit_vector delimiter_vector(coded_rows_size, false);
+
     uint64_t pos = 0;
-    row_code_delimiters_ = bit_vector_stat(
-        [&](const std::function<void(uint64_t)> &callback) {
-            SmallVector row_indices_small;
-            call_rows([&](const auto &row_indices) {
-                row_indices_small.assign(row_indices.begin(), row_indices.end());
+    row_indices_small.clear();
+    call_rows([&](const auto &row_indices) {
+        row_indices_small.assign(row_indices.begin(), row_indices.end());
 
-                num_relations_ += row_indices_small.size();
+        num_relations_ += row_indices_small.size();
 
-                uint64_t code = vector_coder[row_indices_small];
-                uint64_t code_length = utils::code_length(code);
+        uint64_t code = vector_coder[row_indices_small];
+        uint64_t code_length = utils::code_length(code);
 
-                assert(code % buffer_size_
-                    < reduced_matrix_[code / buffer_size_]->num_rows());
+        assert(code % buffer_size_
+            < reduced_matrix_[code / buffer_size_]->num_rows());
 
-                callback(pos + code_length - 1);
+        delimiter_vector[pos + code_length - 1] = true;
 
-                row_builder.set_int(pos, code, code_length);
-                pos += code_length;
-            });
-        },
-        coded_rows_size, rows
-    ).convert_to<bit_vector_rrr<>>();
+        row_builder.set_int(pos, code, code_length);
+        pos += code_length;
+    });
     vector_coder.clear();
 
     assert(pos == row_builder.size());
+
+    row_code_delimiters_ = bit_vector_rrr<>(std::move(delimiter_vector));
     row_codes_ = decltype(row_codes_)(std::move(row_builder));
 }
 

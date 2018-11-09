@@ -3,7 +3,7 @@ project(AnnotationSchemes)
 
 enable_testing()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -13,8 +13,26 @@ endif()
 string(APPEND CMAKE_CXX_FLAGS " \
   -Wall -Wextra -Werror \
   -msse4.2 \
-  -fopenmp -D_THREAD_SAFE -pthread \
+  -D_THREAD_SAFE -pthread \
 ") # -DDBGDEBUG -Wconversion -Wsign-conversion -Werror=shadow=compatible-local
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  string(APPEND CMAKE_CXX_FLAGS " \
+    -Wno-exit-time-destructors \
+    -Wno-unused-function \
+    -Wno-old-style-cast \
+  ")
+endif()
+
+find_package(OpenMP REQUIRED)
+if(NOT TARGET OpenMP::OpenMP_CXX)
+    add_library(OpenMP_TARGET INTERFACE)
+    add_library(OpenMP::OpenMP_CXX ALIAS OpenMP_TARGET)
+    target_compile_options(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
+    find_package(Threads REQUIRED)
+    target_link_libraries(OpenMP_TARGET INTERFACE Threads::Threads)
+    target_link_libraries(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
+endif()
 
 if(NOT DEFINED WITH_AVX)
 set(WITH_AVX TRUE)
@@ -128,14 +146,19 @@ set(METALIBS ${METALIBS}
   -lhts -lz -lbz2
   -lmaus2 -lmaus2_simd_align_128 -lmaus2_simd_align_256
   -lsdsl -ldivsufsort -ldivsufsort64
-  -lssl -lcrypto -llzma
-  -lboost_filesystem -lboost_system
   -lbrwt
+  OpenMP::OpenMP_CXX
 )
 
 if(BUILD_STATIC)
   set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} -static)
   set(METALIBS ${METALIBS} -lcurl -lssl)
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set(METALIBS ${METALIBS} -lstdc++fs)
+else()
+  set(METALIBS ${METALIBS} -lc++fs)
 endif()
 
 target_link_libraries(

@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <vector>
+#include <string>
 
 #include <zlib.h>
 #include <htslib/kseq.h>

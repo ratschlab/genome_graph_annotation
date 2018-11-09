@@ -444,11 +444,9 @@ namespace utils {
         typedef uint32_t R;
 
         RangePartition() {}
-        template <typename N>
-        RangePartition(const std::vector<N> &arrangement,
+        RangePartition(const std::vector<uint64_t> &arrangement,
                        const std::vector<size_t> &group_sizes);
-        template <typename N>
-        explicit RangePartition(std::vector<std::vector<N>>&& partition);
+        explicit RangePartition(std::vector<std::vector<uint64_t>>&& partition);
 
         explicit RangePartition(const RangePartition &) = default;
         RangePartition& operator=(const RangePartition &) = default;
