@@ -126,7 +126,7 @@ For method `brwt`, additional parameters can be passed at the end of the command
 All resulting matrices are saved to the `simulate` folder in the directory where the script is run.
 
 ### Figures from manuscript
-To reproduce the simulated matrix experiment results from the manuscript, run the following commands
+To reproduce the simulated matrix experiment results from the [manuscript](https://www.biorxiv.org/content/early/2018/11/12/468512.full.pdf), run the following commands
 ```
 for N_COLUMNS in 500 1000 3000; do
     run_benchmarks.py . . $N_COLUMNS $N_THREADS 
@@ -142,3 +142,6 @@ An alternative set of methods can be passed as subsequent arguments if desired, 
 ```
 run_benchmarks.py plot $N_COLUMNS brwt_arity_2 brwt_greedy_relax_6 bin_rel_wt
 ```
+
+### Reference
+> Mikhail Karasikov, Harun Mustafa, Amir Joudaki, Sara Javadzadeh No, Gunnar Rätsch, and André Kahles. [_Sparse Binary Relation Representations for Genome Graph Annotation_](https://www.biorxiv.org/content/early/2018/11/12/468512.full.pdf). (2018). https://doi.org/10.1101/468512.
