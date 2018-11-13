@@ -110,7 +110,7 @@ popd
   * make sure that packages like Anaconda are not listed in the exported environment variables
 
 ### Build types: `cmake .. <arguments>` where arguments are:
-- `-DCMAKE_BUILD_TYPE=[Debug|Release|Profile]` -- build modes (`Debug` by default)
+- `-DCMAKE_BUILD_TYPE=[Debug|Release|Profile]` -- build modes (`Release` by default)
 - `-DBUILD_STATIC=[ON|OFF]` -- link statically (`OFF` by default)
 - `-DWITH_AVX=[ON|OFF]` -- compile with support for the avx instructions (`ON` by default)
 
