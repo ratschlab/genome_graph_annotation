@@ -179,8 +179,8 @@ class bit_vector_sd : public bit_vector {
 };
 
 
-// default block size: 127
-template <size_t log_block_size = 127>
+// default block size: 63
+template <size_t log_block_size = 63>
 class bit_vector_rrr : public bit_vector {
     static constexpr auto kBlockSize = log_block_size;
 

@@ -37,7 +37,7 @@ class BinRelWT_sdsl : public BinaryMatrix {
     uint64_t num_relations() const;
 
   private:
-    sdsl::wt_int<sdsl::rrr_vector<127>> wt_;
+    sdsl::wt_int<sdsl::rrr_vector<63>> wt_;
     bit_vector_rrr<> delimiters_;
     uint64_t num_columns_ = 0;
 };
