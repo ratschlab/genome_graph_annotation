@@ -114,7 +114,8 @@ template <typename Label>
 void ColumnCompressed<Label>::serialize(const std::string &filename) const {
     flush();
 
-    std::ofstream outstream(remove_suffix(filename, kExtension) + kExtension);
+    std::ofstream outstream(remove_suffix(filename, kExtension) + kExtension,
+                            std::ios::binary);
     if (!outstream.good())
         throw std::ofstream::failure("Bad stream");
 
@@ -144,7 +145,8 @@ bool ColumnCompressed<Label>::merge_load(const std::vector<std::string> &filenam
                           << std::endl;
             }
 
-            std::ifstream instream(remove_suffix(filename, kExtension) + kExtension);
+            std::ifstream instream(remove_suffix(filename, kExtension) + kExtension,
+                                   std::ios::binary);
             if (!instream.good())
                 return false;
 

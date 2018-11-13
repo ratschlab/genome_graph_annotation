@@ -102,7 +102,8 @@ bool RowCompressed<Label>::has_labels(Index i, const VLabels &labels) const {
 
 template <typename Label>
 void RowCompressed<Label>::serialize(const std::string &filename) const {
-    std::ofstream outstream(remove_suffix(filename, kExtension) + kExtension);
+    std::ofstream outstream(remove_suffix(filename, kExtension) + kExtension,
+                            std::ios::binary);
     if (!outstream.good()) {
         throw std::ofstream::failure("Bad stream");
     }
@@ -112,7 +113,8 @@ void RowCompressed<Label>::serialize(const std::string &filename) const {
 
 template <typename Label>
 bool RowCompressed<Label>::merge_load(const std::vector<std::string> &filenames) {
-    std::ifstream instream(remove_suffix(filenames.at(0), kExtension) + kExtension);
+    std::ifstream instream(remove_suffix(filenames.at(0), kExtension) + kExtension,
+                           std::ios::binary);
     if (!instream.good())
         return false;
 

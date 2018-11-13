@@ -650,7 +650,9 @@ TEST(ColumnCompressed, DumpColumns) {
     };
 
     for (uint64_t i = 0; i < 2; ++i) {
-        std::ifstream in(test_dump_basename + "." + std::to_string(i) + ".raw.column.annodbg");
+        std::ifstream in(test_dump_basename + "." + std::to_string(i)
+                                            + ".raw.column.annodbg",
+                         std::ios::binary);
         ASSERT_TRUE(in.good());
 
         std::vector<uint64_t> vect;

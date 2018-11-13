@@ -169,20 +169,20 @@ TEST(ColMajorCompressed, AllMixed) {
 
 void test_serialization(const ColMajorCompressed &matrix) {
     {
-        std::ofstream out(test_dump_basename_vec_good);
+        std::ofstream out(test_dump_basename_vec_good, std::ios::binary);
         matrix.serialize(out);
         out.close();
     }
 
     {
         ColMajorCompressed loaded;
-        std::ifstream in(test_dump_basename_vec_bad);
+        std::ifstream in(test_dump_basename_vec_bad, std::ios::binary);
         ASSERT_FALSE(loaded.load(in));
     }
 
     ColMajorCompressed loaded;
     {
-        std::ifstream in(test_dump_basename_vec_good);
+        std::ifstream in(test_dump_basename_vec_good, std::ios::binary);
         ASSERT_TRUE(loaded.load(in));
         ASSERT_TRUE(in.good());
     }

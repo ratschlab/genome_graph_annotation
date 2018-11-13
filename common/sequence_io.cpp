@@ -70,7 +70,7 @@ void read_fasta_file_critical(const std::string &filename,
                               const std::string &filter_filename) {
     std::vector<bool> filter;
     if (filter_filename.size()) {
-        std::ifstream instream(filter_filename);
+        std::ifstream instream(filter_filename, std::ios::binary);
         try {
             filter = load_number_vector<bool>(instream);
         } catch (...) {

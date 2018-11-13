@@ -98,7 +98,8 @@ void DBGSD::serialize(std::ostream &out) const {
 }
 
 void DBGSD::serialize(const std::string &filename) const {
-    std::ofstream out(utils::remove_suffix(filename, kExtension) + kExtension);
+    std::ofstream out(utils::remove_suffix(filename, kExtension) + kExtension,
+                      std::ios::binary);
     serialize(out);
 }
 
@@ -128,7 +129,8 @@ bool DBGSD::load(std::istream &in) {
 }
 
 bool DBGSD::load(const std::string &filename) {
-    std::ifstream in(utils::remove_suffix(filename, kExtension) + kExtension);
+    std::ifstream in(utils::remove_suffix(filename, kExtension) + kExtension,
+                     std::ios::binary);
     return load(in);
 }
 

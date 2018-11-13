@@ -32,7 +32,8 @@ void test_vector_points(uint64_t n, double d, const std::string &prefix) {
     std::ofstream out(std::string("test.")
                         + prefix
                         + "." + std::to_string(n) + "_" + std::to_string(d)
-                        + ".bv");
+                        + ".bv",
+                      std::ios::binary);
 
     std::cout << prefix << "\t"
               << n << " " << d << "\t"
@@ -336,7 +337,7 @@ int main(int argc, char *argv[]) {
             assert(matrix.get());
             assert(matrix->num_columns() == num_cols);
 
-            std::ofstream outfile(out_name + ".annomat");
+            std::ofstream outfile(out_name + ".annomat", std::ios::binary);
             matrix->serialize(outfile);
             const auto serialized_size = outfile.tellp();
 
@@ -372,7 +373,7 @@ int main(int argc, char *argv[]) {
             cmd.parse(argc, argv);
 
             for (const auto &filename : files_arg.getValue()) {
-                std::ifstream in(filename);
+                std::ifstream in(filename, std::ios::binary);
 
                 auto matrix = generate_from_rows(
                     {},
@@ -446,7 +447,7 @@ int main(int argc, char *argv[]) {
                               << matrix_subsample.num_rows() << ", " << matrix_subsample.num_columns()
                               << ")" << std::endl;
 
-                    std::ofstream out(out_arg.getValue());
+                    std::ofstream out(out_arg.getValue(), std::ios::binary);
                     matrix_subsample.serialize(out);
                 } else {
                     throw std::runtime_error("Not supported yet");
@@ -474,10 +475,10 @@ int main(int argc, char *argv[]) {
                     annotator.merge_load({ file });
                     std::cout << "done\n";
                     const auto &rows = annotator.data().data();
-                    std::ofstream sdout(file + ".sd");
+                    std::ofstream sdout(file + ".sd", std::ios::binary);
                     std::cout << "Base:\t" << rows.serialize(sdout) << std::endl;
                     std::cout << "converting\n";
-                    std::ofstream rrrout(file + ".rrr");
+                    std::ofstream rrrout(file + ".rrr", std::ios::binary);
                     sdsl::rrr_vector<> rrr(rows.copy_to<sdsl::bit_vector>());
                     std::cout << "Dummy:\t" << rrr.serialize(rrrout) << std::endl;
                 } else if (compressor == MatrixType::RAINBOWFISH) {
@@ -500,26 +501,26 @@ int main(int argc, char *argv[]) {
 
                     //serialize
                     {
-                        std::ofstream outsd(file + ".row_codes.sd");
+                        std::ofstream outsd(file + ".row_codes.sd", std::ios::binary);
                         row_codes.serialize(outsd);
 
-                        std::ofstream outrrr(file + ".row_codes.rrr");
+                        std::ofstream outrrr(file + ".row_codes.rrr", std::ios::binary);
                         row_codes.copy_to<bit_vector_rrr<>>().serialize(outrrr);
                     }
                     {
-                        std::ofstream outsd(file + ".row_code_delimiters.sd");
+                        std::ofstream outsd(file + ".row_code_delimiters.sd", std::ios::binary);
                         row_code_delimiters.serialize(outsd);
 
-                        std::ofstream outrrr(file + ".row_code_delimiters.rrr");
+                        std::ofstream outrrr(file + ".row_code_delimiters.rrr", std::ios::binary);
                         row_code_delimiters.copy_to<bit_vector_rrr<>>().serialize(outrrr);
                     }
                     {
-                        std::ofstream outsd(file + ".distinct_rows.sd");
+                        std::ofstream outsd(file + ".distinct_rows.sd", std::ios::binary);
                         for (const auto &a : distinct_rows) {
                             a->serialize(outsd);
                         }
 
-                        std::ofstream outrrr(file + ".distinct_rows.rrr");
+                        std::ofstream outrrr(file + ".distinct_rows.rrr", std::ios::binary);
                         for (const auto &a : distinct_rows) {
                             dynamic_cast<const RowConcatenated<> &>(*a).data()
                                 .copy_to<bit_vector_rrr<>>().serialize(outrrr);

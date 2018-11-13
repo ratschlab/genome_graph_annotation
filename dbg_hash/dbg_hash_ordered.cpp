@@ -107,7 +107,8 @@ void DBGHashOrdered::serialize(std::ostream &out) const {
 }
 
 void DBGHashOrdered::serialize(const std::string &filename) const {
-    std::ofstream out(utils::remove_suffix(filename, kExtension) + kExtension);
+    std::ofstream out(utils::remove_suffix(filename, kExtension) + kExtension,
+                      std::ios::binary);
     serialize(out);
 }
 
@@ -144,7 +145,8 @@ bool DBGHashOrdered::load(std::istream &in) {
 }
 
 bool DBGHashOrdered::load(const std::string &filename) {
-    std::ifstream in(utils::remove_suffix(filename, kExtension) + kExtension);
+    std::ifstream in(utils::remove_suffix(filename, kExtension) + kExtension,
+                     std::ios::binary);
     return load(in);
 }
 

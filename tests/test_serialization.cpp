@@ -15,11 +15,11 @@ TEST(Serialization, SerializationVectorBool) {
                                               0, 1, 0, 0, 0, 0, 1, 1 };
     std::vector<bool> numbers(init_list);
 
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     serialize_number_vector(outstream, numbers);
     outstream.close();
 
-    std::ifstream instream("../tests/data/vector_dump_test");
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     auto loaded_vector = load_number_vector<bool>(instream);
 
     ASSERT_EQ(numbers, loaded_vector);
@@ -30,11 +30,11 @@ TEST(Serialization, SerializationVectorUInt8) {
                                                  0, 1, 100, 0, 0, 4, 1, 1 };
     std::vector<uint8_t> numbers(init_list);
 
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     serialize_number_vector(outstream, numbers);
     outstream.close();
 
-    std::ifstream instream(test_dump_basename);
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     auto loaded_vector = load_number_vector<uint8_t>(instream);
 
     ASSERT_EQ(numbers, loaded_vector);
@@ -45,11 +45,11 @@ TEST(Serialization, SerializationVectorUInt64) {
                                                   0, 1, 100, 1llu << 63, 0, 4, 1, 1 };
     std::vector<uint64_t> numbers(init_list);
 
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     serialize_number_vector(outstream, numbers);
     outstream.close();
 
-    std::ifstream instream(test_dump_basename);
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     auto loaded_vector = load_number_vector<uint64_t>(instream);
 
     ASSERT_EQ(numbers, loaded_vector);
@@ -60,11 +60,11 @@ TEST(Serialization, SerializationVectorUInt64Effective1Bit) {
                                                   0, 1, 0, 0, 0, 1, 1, 1 };
     std::vector<uint64_t> numbers(init_list);
 
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     serialize_number_vector(outstream, numbers, 1);
     outstream.close();
 
-    std::ifstream instream(test_dump_basename);
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     auto loaded_vector = load_number_vector<uint64_t>(instream);
 
     ASSERT_EQ(numbers, loaded_vector);
@@ -78,18 +78,18 @@ void test_random_vector(size_t length) {
             numbers[j] = rand() % 256;
         }
 
-        std::ofstream outstream(test_dump_basename);
+        std::ofstream outstream(test_dump_basename, std::ios::binary);
         serialize_number_vector(outstream, numbers);
         outstream.close();
 
         {
-            std::ifstream instream(test_dump_basename);
+            std::ifstream instream(test_dump_basename, std::ios::binary);
             ASSERT_EQ(numbers.size(), get_number_vector_size(instream));
             auto loaded_vector = load_number_vector<uint8_t>(instream);
             ASSERT_EQ(numbers, loaded_vector);
         }
         {
-            std::ifstream instream(test_dump_basename);
+            std::ifstream instream(test_dump_basename, std::ios::binary);
             auto loaded_vector = load_number_vector<uint8_t>(instream);
             ASSERT_EQ(numbers, loaded_vector);
         }
@@ -119,11 +119,11 @@ TEST(Serialization, SerializationRandomUInt8Vector10000000) {
 TEST(int_vector, SerializeAndLoad) {
     brwt::int_vector seq = {10, 20, 30, 40, 50};
 
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     seq.serialize(outstream);
     outstream.close();
 
-    std::ifstream instream(test_dump_basename);
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     brwt::int_vector seq_loaded;
     EXPECT_TRUE(seq_loaded.load(instream));
     instream.close();
@@ -135,11 +135,11 @@ TEST(int_vector, SerializeAndLoad) {
 
 TEST(bit_vector, SerializeAndLoad) {
     brwt::bit_vector v(100, 0xFF00'4FF4'FF11'33AA);
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     v.serialize(outstream);
     outstream.close();
 
-    std::ifstream instream(test_dump_basename);
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     brwt::bit_vector v_loaded;
     EXPECT_TRUE(v_loaded.load(instream));
     instream.close();

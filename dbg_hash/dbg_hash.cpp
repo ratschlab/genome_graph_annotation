@@ -105,7 +105,8 @@ void DBGHash::serialize(std::ostream &out) const {
 }
 
 void DBGHash::serialize(const std::string &filename) const {
-    std::ofstream out(utils::remove_suffix(filename, kExtension) + kExtension);
+    std::ofstream out(utils::remove_suffix(filename, kExtension) + kExtension,
+                      std::ios::binary);
     serialize(out);
 }
 
@@ -129,7 +130,8 @@ bool DBGHash::load(std::istream &in) {
 }
 
 bool DBGHash::load(const std::string &filename) {
-    std::ifstream in(utils::remove_suffix(filename, kExtension) + kExtension);
+    std::ifstream in(utils::remove_suffix(filename, kExtension) + kExtension,
+                     std::ios::binary);
     return load(in);
 }
 

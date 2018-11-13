@@ -57,12 +57,12 @@ void test_serialize_load_test(const BinMat &binary_matrix,
                               uint64_t num_relations = indices.size()) {
     test_binary_matrix(binary_matrix, num_rows, num_columns, num_relations);
 
-    std::ofstream out(test_dump_basename);
+    std::ofstream out(test_dump_basename, std::ios::binary);
     binary_matrix.serialize(out);
     out.close();
 
     BinMat binary_matrix_loaded;
-    std::ifstream in(test_dump_basename);
+    std::ifstream in(test_dump_basename, std::ios::binary);
     binary_matrix_loaded.load(in);
 
     test_binary_matrix(binary_matrix_loaded, num_rows, num_columns, num_relations);

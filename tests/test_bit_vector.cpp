@@ -310,13 +310,13 @@ TEST(bit_vector_dyn, Serialization) {
     std::unique_ptr<bit_vector> vector { new bit_vector_dyn(init_list) };
     std::vector<bool> numbers(init_list);
     ASSERT_TRUE(vector);
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     vector->serialize(outstream);
     outstream.close();
 
     vector.reset(new bit_vector_dyn());
     ASSERT_TRUE(vector);
-    std::ifstream instream(test_dump_basename);
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     ASSERT_TRUE(vector->load(instream));
 
     reference_based_test(*vector, numbers);
@@ -328,13 +328,13 @@ TEST(bit_vector_stat, Serialization) {
     std::unique_ptr<bit_vector> vector { new bit_vector_stat(init_list) };
     std::vector<bool> numbers(init_list);
     ASSERT_TRUE(vector);
-    std::ofstream outstream(test_dump_basename);
+    std::ofstream outstream(test_dump_basename, std::ios::binary);
     vector->serialize(outstream);
     outstream.close();
 
     vector.reset(new bit_vector_stat());
     ASSERT_TRUE(vector);
-    std::ifstream instream(test_dump_basename);
+    std::ifstream instream(test_dump_basename, std::ios::binary);
     ASSERT_TRUE(vector->load(instream));
 
     reference_based_test(*vector, numbers);
@@ -353,14 +353,14 @@ TEST(bit_vector_sd, Serialization) {
         bit_vector *vector = new bit_vector_sd(numbers);
         ASSERT_EQ(16u, numbers.size());
         ASSERT_TRUE(vector);
-        std::ofstream outstream(test_dump_basename);
+        std::ofstream outstream(test_dump_basename, std::ios::binary);
         vector->serialize(outstream);
         outstream.close();
         delete vector;
 
         vector = new bit_vector_sd;
         ASSERT_TRUE(vector);
-        std::ifstream instream(test_dump_basename);
+        std::ifstream instream(test_dump_basename, std::ios::binary);
         ASSERT_TRUE(vector->load(instream));
 
         reference_based_test(*vector, numbers);
@@ -382,14 +382,14 @@ TEST(bit_vector_rrr, Serialization) {
         bit_vector *vector = new bit_vector_rrr<>(numbers);
         ASSERT_EQ(16u, numbers.size());
         ASSERT_TRUE(vector);
-        std::ofstream outstream(test_dump_basename);
+        std::ofstream outstream(test_dump_basename, std::ios::binary);
         vector->serialize(outstream);
         outstream.close();
         delete vector;
 
         vector = new bit_vector_rrr<>;
         ASSERT_TRUE(vector);
-        std::ifstream instream(test_dump_basename);
+        std::ifstream instream(test_dump_basename, std::ios::binary);
         ASSERT_TRUE(vector->load(instream));
 
         reference_based_test(*vector, std::vector<bool>(numbers.begin(), numbers.end()));
@@ -411,14 +411,14 @@ TEST(bit_vector_small, Serialization) {
         bit_vector *vector = new bit_vector_small(numbers);
         ASSERT_EQ(16u, numbers.size());
         ASSERT_TRUE(vector);
-        std::ofstream outstream(test_dump_basename);
+        std::ofstream outstream(test_dump_basename, std::ios::binary);
         vector->serialize(outstream);
         outstream.close();
         delete vector;
 
         vector = new bit_vector_small;
         ASSERT_TRUE(vector);
-        std::ifstream instream(test_dump_basename);
+        std::ifstream instream(test_dump_basename, std::ios::binary);
         ASSERT_TRUE(vector->load(instream));
 
         reference_based_test(*vector, numbers);
@@ -442,7 +442,7 @@ TEST(bit_vector_sd, SerializationCatchErrorWhenLoadingSdVector) {
     for (auto init_list : init_lists) {
         sdsl::bit_vector bv(init_list);
         {
-            std::ofstream outstream(test_dump_basename);
+            std::ofstream outstream(test_dump_basename, std::ios::binary);
             sdsl::sd_vector<>(bv).serialize(outstream);
             outstream.close();
             bit_vector_sd vector;
@@ -450,7 +450,7 @@ TEST(bit_vector_sd, SerializationCatchErrorWhenLoadingSdVector) {
             ASSERT_FALSE(vector.load(instream));
         }
         {
-            std::ofstream outstream(test_dump_basename);
+            std::ofstream outstream(test_dump_basename, std::ios::binary);
             bit_vector_sd(bv).serialize(outstream);
             outstream.close();
             bit_vector_sd vector;

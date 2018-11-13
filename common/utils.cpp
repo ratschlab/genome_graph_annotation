@@ -590,7 +590,7 @@ TempFile::TempFile(const std::string &tmp_dir)
     close(fd);
 
     tmp_ostream_.reset(new std::ofstream(tmp_file_name_,
-                                          std::ios::binary | std::ios::app));
+                                         std::ios::binary | std::ios::app));
     if (!tmp_ostream_->good()) {
         unlink(tmp_file_name_.c_str());
         throw std::runtime_error("Error: temp file "

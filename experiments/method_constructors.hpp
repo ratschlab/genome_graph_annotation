@@ -81,7 +81,7 @@ matrix_type_to_data(const std::string &file, MatrixType type) {
         std::cerr << "Error: invalid matrix type" << std::endl;
         exit(1);
     }
-    std::ifstream in(file);
+    std::ifstream in(file, std::ios::binary);
     try {
         matrix_ptr->load(in);
     } catch (...) {

@@ -98,7 +98,8 @@ void
 StaticBinRelAnnotator<BinaryMatrixType, Label>
 ::serialize(const std::string &filename) const {
     std::ofstream outstream(remove_suffix(filename, kFileExtension)
-                                                         + kFileExtension);
+                                                         + kFileExtension,
+                            std::ios::binary);
     if (!outstream.good()) {
         throw std::ofstream::failure("Bad stream");
     }
@@ -115,7 +116,8 @@ StaticBinRelAnnotator<BinaryMatrixType, Label>
                      " Only the first will be loaded." << std::endl;
 
     std::ifstream instream(remove_suffix(filenames.at(0), kFileExtension)
-                                                            + kFileExtension);
+                                                            + kFileExtension,
+                           std::ios::binary);
     if (!instream.good())
         return false;
 
