@@ -45,7 +45,8 @@ class BRWTBottomUpBuilder : public BRWTBuilder {
     static Partitioner get_basic_partitioner(size_t arity);
 
     static BRWT build(VectorsPtr&& columns,
-                      Partitioner partitioner = get_basic_partitioner(2));
+                      Partitioner partitioner = get_basic_partitioner(2),
+                      size_t num_threads = 1);
 
   private:
     static std::pair<NodeBRWT, std::unique_ptr<bit_vector>>
@@ -60,17 +61,22 @@ class BRWTOptimizer {
 
     // remove some internal nodes to make the tree
     // smaller and increase the arity
-    static void relax(BRWT *brwt_matrix, uint64_t max_arity = -1);
+    static void relax(BRWT *brwt_matrix,
+                      uint64_t max_arity = -1,
+                      size_t num_threads = 1);
 
   private:
     using NodeBRWT = BRWTBuilder::NodeBRWT;
 
     static void add_submatrix(std::unique_ptr<BinaryMatrix>&& node,
                               NodeBRWT *parent,
-                              uint64_t max_delta_arity);
+                              uint64_t max_delta_arity,
+                              size_t num_threads);
 
     // removes a node and reassigns all its children to its parent
-    static void reassign(std::unique_ptr<BRWT>&& node, NodeBRWT *parent);
+    static void reassign(std::unique_ptr<BRWT>&& node,
+                         NodeBRWT *parent,
+                         size_t num_threads);
     // estimate delta between the transformed tree and the current one
     static double pruning_delta(const BRWT &node);
 };

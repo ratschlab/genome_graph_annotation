@@ -629,11 +629,13 @@ int main(int argc, const char *argv[]) {
                         std::cout << "Converting...\t" << std::flush;
 
                     auto brwt_annotator = config->greedy_brwt
-                        ? annotate::convert_to_greedy_BRWT<annotate::BRWTCompressed<>>(std::move(*annotator))
+                        ? annotate::convert_to_greedy_BRWT<annotate::BRWTCompressed<>>(
+                            std::move(*annotator),
+                            config->parallel)
                         : annotate::convert_to_simple_BRWT<annotate::BRWTCompressed<>>(
                             std::move(*annotator),
-                            config->arity_brwt
-                        );
+                            config->arity_brwt,
+                            config->parallel);
 
                     annotator.reset();
 
@@ -742,7 +744,8 @@ int main(int argc, const char *argv[]) {
                 std::cout << "Relaxing BRWT tree...\t" << std::flush;
 
             annotate::relax_BRWT<annotate::BRWTCompressed<>>(annotator.get(),
-                                                             config->relax_arity_brwt);
+                                                             config->relax_arity_brwt,
+                                                             config->parallel);
 
             annotator->serialize(config->outfbase);
             if (config->verbose)

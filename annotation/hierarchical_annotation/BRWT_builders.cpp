@@ -121,7 +121,9 @@ std::vector<T> subset(std::vector<T> *vector,
     return result;
 }
 
-BRWT BRWTBottomUpBuilder::build(VectorsPtr&& columns, Partitioner partitioner) {
+BRWT BRWTBottomUpBuilder::build(VectorsPtr&& columns,
+                                Partitioner partitioner,
+                                size_t num_threads) {
     if (!columns.size())
         return BRWT();
 
@@ -142,7 +144,7 @@ BRWT BRWTBottomUpBuilder::build(VectorsPtr&& columns, Partitioner partitioner) {
         std::vector<NodeBRWT> parent_nodes(groups.size());
         std::vector<std::unique_ptr<bit_vector>> parent_columns(groups.size());
 
-        #pragma omp parallel for
+        #pragma omp parallel for num_threads(num_threads)
         for (size_t g = 0; g < groups.size(); ++g) {
             const auto &group = groups[g];
             assert(group.size());
@@ -165,7 +167,9 @@ BRWT BRWTBottomUpBuilder::build(VectorsPtr&& columns, Partitioner partitioner) {
 }
 
 
-void BRWTOptimizer::relax(BRWT *brwt_matrix, uint64_t max_arity) {
+void BRWTOptimizer::relax(BRWT *brwt_matrix,
+                          uint64_t max_arity,
+                          size_t num_threads) {
     assert(brwt_matrix);
 
     std::deque<BRWT*> parents;
@@ -200,7 +204,8 @@ void BRWTOptimizer::relax(BRWT *brwt_matrix, uint64_t max_arity) {
                 &updated_parent,
                 max_arity - std::min(max_arity,
                         static_cast<uint64_t>(updated_parent.group_sizes.size())
-                            + parent.child_nodes_.size() - g - 1)
+                            + parent.child_nodes_.size() - g - 1),
+                num_threads
             );
         }
 
@@ -211,7 +216,8 @@ void BRWTOptimizer::relax(BRWT *brwt_matrix, uint64_t max_arity) {
 
 void BRWTOptimizer::add_submatrix(std::unique_ptr<BinaryMatrix>&& submatrix,
                                   NodeBRWT *parent,
-                                  uint64_t max_delta_arity) {
+                                  uint64_t max_delta_arity,
+                                  size_t num_threads) {
     assert(parent);
 
     const auto *brwt_cptr = dynamic_cast<const BRWT*>(submatrix.get());
@@ -247,11 +253,14 @@ void BRWTOptimizer::add_submatrix(std::unique_ptr<BinaryMatrix>&& submatrix,
         // at this point we are going to remove this node and
         // reassign all its children to its parent directly
         reassign(std::unique_ptr<BRWT>(dynamic_cast<BRWT*>(submatrix.release())),
-                 parent);
+                 parent,
+                 num_threads);
     }
 }
 
-void BRWTOptimizer::reassign(std::unique_ptr<BRWT>&& node, NodeBRWT *parent) {
+void BRWTOptimizer::reassign(std::unique_ptr<BRWT>&& node,
+                             NodeBRWT *parent,
+                             size_t num_threads) {
     assert(node);
     assert(parent);
 
@@ -264,7 +273,7 @@ void BRWTOptimizer::reassign(std::unique_ptr<BRWT>&& node, NodeBRWT *parent) {
     parent->group_sizes.resize(parent->group_sizes.size() + node->child_nodes_.size());
     parent->child_nodes.resize(parent->child_nodes.size() + node->child_nodes_.size());
 
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(num_threads)
     for (size_t i = 0; i < node->child_nodes_.size(); ++i) {
 
         auto submatrix = std::move(node->child_nodes_[i]);

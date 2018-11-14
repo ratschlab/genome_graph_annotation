@@ -8,9 +8,57 @@ const uint64_t kNumRowsSampled = 1'000'000;
 
 
 std::vector<std::vector<bool>>
+get_submatrix(const BRWTBottomUpBuilder::VectorsPtr &columns,
+              const std::vector<uint64_t> &row_indexes,
+              size_t num_threads) {
+    assert(std::is_sorted(row_indexes.begin(), row_indexes.end()));
+
+    if (!columns.size())
+        return {};
+
+    assert(row_indexes.size() <= columns[0]->size());
+
+    std::vector<std::vector<bool>> submatrix(columns.size());
+
+    #pragma omp parallel for num_threads(num_threads)
+    for (size_t i = 0; i < columns.size(); ++i) {
+        submatrix[i] = utils::subvector(*columns[i], row_indexes);
+
+#ifndef NDEBUG
+        for (size_t j = 0; j < row_indexes.size(); ++j) {
+            assert(submatrix[i][j] == (*columns[i])[row_indexes[j]]);
+        }
+#endif
+    }
+
+    return submatrix;
+}
+
+// returns shrinked columns
+std::vector<std::vector<bool>>
 random_submatrix(const BRWTBottomUpBuilder::VectorsPtr &columns,
                  uint64_t num_rows_sampled,
-                 int seed = 0);
+                 int seed,
+                 size_t num_threads) {
+    if (!columns.size())
+        return {};
+
+    std::mt19937 gen;
+
+    if (seed)
+        gen.seed(seed);
+
+    auto indexes = utils::sample_indexes(columns[0]->size(),
+                                         num_rows_sampled,
+                                         gen);
+    // sort indexes
+    std::sort(indexes.begin(), indexes.end());
+    // check if indexes are sampled without replacement
+    assert(std::unique(indexes.begin(), indexes.end()) == indexes.end());
+
+    return get_submatrix(columns, indexes, num_threads);
+}
+
 
 // Partitionings for BRWT
 
@@ -29,10 +77,11 @@ column_arrangement(const BRWTBottomUpBuilder::VectorsPtr &vectors) {
 }
 
 std::vector<std::vector<double>>
-correlation_similarity(const std::vector<std::vector<bool>> &cols) {
+correlation_similarity(const std::vector<std::vector<bool>> &cols,
+                       size_t num_threads) {
     std::vector<std::vector<double>> similarities(cols.size());
 
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(num_threads)
     for (size_t j = 1; j < cols.size(); ++j) {
 
         std::vector<uint64_t> set_bit_positions;
@@ -58,10 +107,11 @@ correlation_similarity(const std::vector<std::vector<bool>> &cols) {
 }
 
 std::vector<std::vector<double>>
-jaccard_similarity(const std::vector<std::vector<bool>> &cols) {
+jaccard_similarity(const std::vector<std::vector<bool>> &cols,
+                   size_t num_threads) {
     std::vector<uint64_t> num_set_bits(cols.size(), 0);
 
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(num_threads)
     for (size_t j = 0; j < cols.size(); ++j) {
         for (size_t i = 0; i < cols[j].size(); i++) {
             if (cols[j][i])
@@ -69,9 +119,9 @@ jaccard_similarity(const std::vector<std::vector<bool>> &cols) {
         }
     }
 
-    auto similarities = correlation_similarity(cols);
+    auto similarities = correlation_similarity(cols, num_threads);
 
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(num_threads)
     for (size_t j = 0; j < cols.size(); ++j) {
         for (size_t k = 0; k < j; ++k) {
             similarities[j][k] /= (num_set_bits[j]
@@ -86,13 +136,17 @@ jaccard_similarity(const std::vector<std::vector<bool>> &cols) {
 
 // For each vector j return similarities with vectors 0, ..., j-1
 std::vector<std::vector<double>>
-estimate_similarities(const BRWTBottomUpBuilder::VectorsPtr &vectors) {
+estimate_similarities(const BRWTBottomUpBuilder::VectorsPtr &vectors,
+                      size_t num_threads) {
     if (!vectors.size())
         return {};
 
     uint64_t num_sampled_rows = std::min(kNumRowsSampled, vectors[0]->size());
 
-    return correlation_similarity(random_submatrix(vectors, num_sampled_rows, 1));
+    return correlation_similarity(
+        random_submatrix(vectors, num_sampled_rows, 1, num_threads),
+        num_threads
+    );
 }
 
 template <typename T>
@@ -105,11 +159,12 @@ inline T dist(T first, T second) {
 // input: columns
 // output: partition, for instance -- a set of column pairs
 BRWTBottomUpBuilder::Partition
-binary_grouping_greedy(const BRWTBottomUpBuilder::VectorsPtr &columns) {
+parallel_binary_grouping_greedy(const BRWTBottomUpBuilder::VectorsPtr &columns,
+                                size_t num_threads) {
     if (!columns.size())
         return {};
 
-    auto similarities = estimate_similarities(columns);
+    auto similarities = estimate_similarities(columns, num_threads);
 
     std::vector<std::tuple<size_t, size_t, uint64_t>> candidates;
     candidates.reserve(columns.size() * (columns.size() - 1) / 2);
@@ -153,55 +208,15 @@ binary_grouping_greedy(const BRWTBottomUpBuilder::VectorsPtr &columns) {
     return partition;
 }
 
-
-std::vector<std::vector<bool>>
-get_submatrix(const BRWTBottomUpBuilder::VectorsPtr &columns,
-              const std::vector<uint64_t> &row_indexes) {
-    assert(std::is_sorted(row_indexes.begin(), row_indexes.end()));
-
-    if (!columns.size())
-        return {};
-
-    assert(row_indexes.size() <= columns[0]->size());
-
-    std::vector<std::vector<bool>> submatrix(columns.size());
-
-    #pragma omp parallel for
-    for (size_t i = 0; i < columns.size(); ++i) {
-        submatrix[i] = utils::subvector(*columns[i], row_indexes);
-
-#ifndef NDEBUG
-        for (size_t j = 0; j < row_indexes.size(); ++j) {
-            assert(submatrix[i][j] == (*columns[i])[row_indexes[j]]);
-        }
-#endif
-    }
-
-    return submatrix;
+BRWTBottomUpBuilder::Partition
+binary_grouping_greedy(const BRWTBottomUpBuilder::VectorsPtr &columns) {
+    return parallel_binary_grouping_greedy(columns, 1);
 }
 
-// returns shrinked columns
-std::vector<std::vector<bool>>
-random_submatrix(const BRWTBottomUpBuilder::VectorsPtr &columns,
-                 uint64_t num_rows_sampled,
-                 int seed) {
-    if (!columns.size())
-        return {};
-
-    std::mt19937 gen;
-
-    if (seed)
-        gen.seed(seed);
-
-    auto indexes = utils::sample_indexes(columns[0]->size(),
-                                         num_rows_sampled,
-                                         gen);
-    // sort indexes
-    std::sort(indexes.begin(), indexes.end());
-    // check if indexes are sampled without replacement
-    assert(std::unique(indexes.begin(), indexes.end()) == indexes.end());
-
-    return get_submatrix(columns, indexes);
+auto get_parallel_binary_grouping_greedy(size_t num_threads) {
+    return [&num_threads](const BRWTBottomUpBuilder::VectorsPtr &columns) {
+        return parallel_binary_grouping_greedy(columns, num_threads);
+    };
 }
 
 

@@ -46,7 +46,7 @@ template <class StaticAnnotation, typename Label, class Partitioning>
 typename std::unique_ptr<StaticAnnotation>
 convert_to_BRWT(ColumnCompressed<Label>&& annotator,
                 Partitioning partitioning,
-                size_t relax_max_arity) {
+                size_t num_threads) {
     annotator.flush();
 
     std::vector<std::unique_ptr<bit_vector>> columns;
@@ -55,12 +55,8 @@ convert_to_BRWT(ColumnCompressed<Label>&& annotator,
     }
 
     auto matrix = std::make_unique<BRWT>(
-        BRWTBottomUpBuilder::build(std::move(columns), partitioning)
+        BRWTBottomUpBuilder::build(std::move(columns), partitioning, num_threads)
     );
-
-    // optimize arity
-    if (relax_max_arity > 1)
-        BRWTOptimizer::relax(matrix.get(), relax_max_arity);
 
     return std::make_unique<StaticAnnotation>(std::move(matrix),
                                               annotator.label_encoder_);
@@ -69,11 +65,11 @@ convert_to_BRWT(ColumnCompressed<Label>&& annotator,
 template <>
 std::unique_ptr<BRWTCompressed<>>
 convert_to_greedy_BRWT<BRWTCompressed<>, std::string>(ColumnCompressed<std::string>&& annotation,
-                                                      size_t relax_max_arity) {
+                                                      size_t num_threads) {
     return convert_to_BRWT<BRWTCompressed<>>(
         std::move(annotation),
-        binary_grouping_greedy,
-        relax_max_arity
+        get_parallel_binary_grouping_greedy(num_threads),
+        num_threads
     );
 }
 
@@ -81,20 +77,22 @@ template <>
 std::unique_ptr<BRWTCompressed<>>
 convert_to_simple_BRWT<BRWTCompressed<>, std::string>(ColumnCompressed<std::string>&& annotation,
                                                       size_t grouping_arity,
-                                                      size_t relax_max_arity) {
+                                                      size_t num_threads) {
     return convert_to_BRWT<BRWTCompressed<>>(
         std::move(annotation),
         BRWTBottomUpBuilder::get_basic_partitioner(grouping_arity),
-        relax_max_arity
+        num_threads
     );
 }
 
 template <>
 void relax_BRWT<BRWTCompressed<>>(BRWTCompressed<> *annotation,
-                                  size_t relax_max_arity) {
+                                  size_t relax_max_arity,
+                                  size_t num_threads) {
     if (relax_max_arity > 1)
         BRWTOptimizer::relax(const_cast<BRWT*>(&annotation->data()),
-                             relax_max_arity);
+                             relax_max_arity,
+                             num_threads);
 }
 
 
