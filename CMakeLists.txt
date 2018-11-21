@@ -155,10 +155,42 @@ if(BUILD_STATIC)
   set(METALIBS ${METALIBS} -lcurl -lssl)
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(METALIBS ${METALIBS} -lstdc++fs)
-else()
+# check for std::filesystem::temp_directory_path
+include(CheckCXXSourceRuns)
+set(CMAKE_REQUIRED_FLAGS " -std=c++17")
+set(CMAKE_REQUIRED_LIBRARIES "c++fs")
+check_cxx_source_runs("
+    #include <iostream>
+    #include <filesystem>
+
+    int main() {
+        std::cout << std::filesystem::temp_directory_path();
+        return 0;
+    }
+" CPPFS)
+unset(CMAKE_REQUIRED_FLAGS)
+unset(CMAKE_REQUIRED_LIBRARIES)
+if(CPPFS)
   set(METALIBS ${METALIBS} -lc++fs)
+else()
+  set(CMAKE_REQUIRED_FLAGS " -std=c++17")
+  set(CMAKE_REQUIRED_LIBRARIES "stdc++fs")
+  check_cxx_source_runs("
+      #include <iostream>
+      #include <filesystem>
+
+      int main() {
+          std::cout << std::filesystem::temp_directory_path();
+          return 0;
+      }
+  " STDCPPFS)
+  unset(CMAKE_REQUIRED_FLAGS)
+  unset(CMAKE_REQUIRED_LIBRARIES)
+  if(STDCPPFS)
+    set(METALIBS ${METALIBS} -lstdc++fs)
+  else()
+    message(FATAL_ERROR "std::filesystem not found")
+  endif()
 endif()
 
 target_link_libraries(
