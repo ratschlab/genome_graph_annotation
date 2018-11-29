@@ -92,10 +92,7 @@ pushd external-libraries/sdsl-lite
 popd
 
 pushd external-libraries/libmaus2
-[[ "$OSTYPE" == "darwin"* ]] && glibtoolize || libtoolize # glibtoolize on MacOS
-aclocal
-autoreconf -i -f
-./configure --prefix=$(pwd)
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$(pwd)
 make -j $(($(getconf _NPROCESSORS_ONLN) - 1))
 make install
 popd

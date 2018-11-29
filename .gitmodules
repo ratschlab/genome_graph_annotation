@@ -2,6 +2,7 @@
 	path = external-libraries/libmaus2
 	url = https://github.com/akahles/libmaus2.git
 	ignore = dirty
+	branch = shrunk
 [submodule "external-libraries/caches"]
 	path = external-libraries/caches
 	url = https://github.com/karasikov/caches.git

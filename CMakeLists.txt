@@ -144,7 +144,7 @@ add_executable(annograph "main.cpp")
 set(METALIBS ${METALIBS}
   -lKMC
   -lhts -lz -lbz2
-  -lmaus2 -lmaus2_simd_align_128 -lmaus2_simd_align_256
+  -lmaus2
   -lsdsl -ldivsufsort -ldivsufsort64
   -lbrwt
   OpenMP::OpenMP_CXX
