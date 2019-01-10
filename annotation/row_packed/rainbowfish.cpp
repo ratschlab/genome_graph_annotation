@@ -21,48 +21,38 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
     IndexVectorMap vector_counter;
     IndexVectorMap vector_coder;
     uint64_t coded_rows_size = 0;
-    uint64_t coded_rows_set_bits = 0;
     uint64_t counter_num_set_bits = 0;
 
     auto flush = [&](const auto &callback) {
         if (!vector_counter.size())
             return;
 
-        std::vector<SmallVector> vectors;
-        vectors.reserve(vector_counter.size());
-
-        std::vector<std::pair<uint64_t, uint64_t>> index_counts;
-        index_counts.reserve(vector_counter.size());
+        std::vector<std::pair<SmallVector, uint64_t>> row_count;
+        row_count.reserve(vector_counter.size());
 
         for (auto it = vector_counter.begin(); it != vector_counter.end(); ++it) {
-            index_counts.emplace_back(index_counts.size(), it->second);
-            vectors.push_back(std::move(it->first));
+            row_count.emplace_back(std::move(it->first), it->second);
         }
-        vector_counter.clear();
-        counter_num_set_bits = 0;
+        vector_counter = IndexVectorMap();
 
         // sort in the order of decreasing counts
-        std::sort(index_counts.begin(), index_counts.end(),
+        std::sort(row_count.begin(), row_count.end(),
             [](const auto &first, const auto &second) {
                 return first.second > second.second;
             }
         );
 
         std::vector<Column> v;
-        for (const auto &index_count : index_counts) {
-            v.assign(vectors[index_count.first].begin(),
-                     vectors[index_count.first].end());
+        for (const auto &pair : row_count) {
+            v.assign(pair.first.begin(), pair.first.end());
 
             callback(v);
 
-            v.clear();
-
             uint64_t code = vector_coder.size();
-            coded_rows_size += utils::code_length(code) * index_count.second;
-            coded_rows_set_bits += sdsl::bits::cnt(code) * index_count.second;
+            coded_rows_size += utils::code_length(code) * pair.second;
 
-            assert(vector_coder.find(vectors[index_count.first]) == vector_coder.end());
-            vector_coder[std::move(vectors[index_count.first])] = code;
+            assert(vector_coder.find(pair.first) == vector_coder.end());
+            vector_coder[std::move(pair.first)] = code;
         }
     };
 
@@ -75,7 +65,6 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
             auto code_find = vector_coder.find(row_indices_small);
             if (code_find != vector_coder.end()) {
                 coded_rows_size += utils::code_length(code_find.value());
-                coded_rows_set_bits += sdsl::bits::cnt(code_find.value());
                 return;
             }
         }
@@ -87,15 +76,17 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
             counter_find.first.value()++;
         }
 
-        if (vector_counter.size() == buffer_size_) {
-            assert(counter_num_set_bits <= num_columns_ * buffer_size_);
-            reduced_matrix_.emplace_back(
-                new ReducedMatrixType(flush,
-                                      num_columns_,
-                                      buffer_size_,
-                                      counter_num_set_bits)
-            );
-        }
+        if (vector_counter.size() < buffer_size_)
+            return;
+
+        assert(counter_num_set_bits <= num_columns_ * buffer_size_);
+        reduced_matrix_.emplace_back(
+            new ReducedMatrixType(flush,
+                                  num_columns_,
+                                  buffer_size_,
+                                  counter_num_set_bits)
+        );
+        counter_num_set_bits = 0;
     });
 
     uint64_t remaining_rows = vector_counter.size();
@@ -111,7 +102,6 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
     sdsl::bit_vector delimiter_vector(coded_rows_size, false);
 
     uint64_t pos = 0;
-    row_indices_small.clear();
     call_rows([&](const auto &row_indices) {
         row_indices_small.assign(row_indices.begin(), row_indices.end());
 
@@ -128,7 +118,7 @@ Rainbowfish::Rainbowfish(const std::function<void(RowCallback)> &call_rows,
         row_builder.set_int(pos, code, code_length);
         pos += code_length;
     });
-    vector_coder.clear();
+    vector_coder = IndexVectorMap();
 
     assert(pos == row_builder.size());
 
