@@ -15,5 +15,7 @@ if [ $# -ne 3 ]; then
 fi
 
 
-$exe classify -v -i $1 -a $2 --anno-type $3 -o out.$1.$2.$3.tsv <(cat $file) 2>&1 | tee out.$1.$2.$3.log
+$exe classify -v --count-labels -i $1 -a $2 --anno-type $3 \
+  -o out.$(basename $1).$(basename $2).$(basename $3).tsv <(cat $file) 2>&1 \
+  | tee out.$(basename $1).$(basename $2).$(basename $3).log
 echo "Done"
