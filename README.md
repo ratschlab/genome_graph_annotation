@@ -23,13 +23,13 @@ The figures below show the final size of two compressed binary relations
 
 | Method  | Kingsford, Gb  | RefSeq, Gb |
 | ------------- | ---: | ---: |
-| Column  | 36.56  | 80.18 |
-| Flat  | 41.21  | 121.60 |
-| [BinRel-WT](https://github.com/dieram3/binrel_wt/) | 49.57  | N/A |
-| BinRel-WT (sdsl)  | 31.40  | 46.84 |
-| Rainbowfish  | 19.22  | N/A |
-| BRWT  | 12.97  | 51.82 |
-| Multi-BRWT  | **9.19**  | **42.75** |
+| Column  | 36.6  | 80.2 |
+| Flat  | 41.2  | 121.6 |
+| [BinRel-WT](https://github.com/dieram3/binrel_wt/) | 49.6  | N/A |
+| BinRel-WT (sdsl)  | 31.4  | 150.6 |
+| Rainbowfish  | 23.2  | 136.6 |
+| BRWT  | 14.1  | 57.2 |
+| **Multi-BRWT**  | **9.9**  | **43.6** |
 
 ### Prerequisites
 - cmake 3.6.1
@@ -177,4 +177,4 @@ run_benchmarks.py plot $N_COLUMNS brwt_arity_2 brwt_greedy_relax_6 bin_rel_wt
 ```
 
 ### Reference
-> Mikhail Karasikov, Harun Mustafa, Amir Joudaki, Sara Javadzadeh No, Gunnar Rätsch, and André Kahles. [_Sparse Binary Relation Representations for Genome Graph Annotation_](https://www.biorxiv.org/content/early/2018/11/12/468512.full.pdf). (2018). https://doi.org/10.1101/468512.
+> Mikhail Karasikov, Harun Mustafa, Amir Joudaki, Sara Javadzadeh No, Gunnar Rätsch, and André Kahles. Sparse Binary Relation Representations for Genome Graph Annotation. (2018). https://doi.org/10.1101/468512.
