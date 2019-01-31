@@ -92,7 +92,7 @@ pushd external-libraries/sdsl-lite
 popd
 
 pushd external-libraries/libmaus2
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$(pwd)
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$(pwd) .
 make -j $(($(getconf _NPROCESSORS_ONLN) - 1))
 make install
 popd
