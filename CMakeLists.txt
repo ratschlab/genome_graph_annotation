@@ -21,6 +21,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-exit-time-destructors \
     -Wno-unused-function \
     -Wno-old-style-cast \
+    -Wno-extra-semi-stmt \
   ")
 endif()
 

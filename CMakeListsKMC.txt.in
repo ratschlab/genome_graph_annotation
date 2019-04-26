@@ -79,16 +79,9 @@ add_executable(kmc
     ${KMC_MAIN_DIR}/kmer_counter.cpp
 )
 
-if(APPLE)
-target_link_libraries(kmc
-    -lKMCcore
-    -lz -lbz2 -lpthread
-)
-elseif(UNIX)
 target_link_libraries(kmc
     KMCcore
     -lz -lbz2 -lpthread
 )
-endif()
 
 endif()

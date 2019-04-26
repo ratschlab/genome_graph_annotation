@@ -31,6 +31,11 @@ std::vector<T> encode(const std::string &sequence, const T *char_map) {
     return encoded;
 }
 
+template
+std::vector<unsigned char>
+encode<unsigned char>(const std::string &, const unsigned char *);
+
+
 template <typename T>
 std::string decode(const std::vector<T> &encoded, const std::string &alphabet) {
     std::string decoded;
