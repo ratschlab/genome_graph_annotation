@@ -270,4 +270,11 @@ class bit_vector_small : public bit_vector {
     std::unique_ptr<bit_vector> vector_;
 };
 
+
+uint64_t inner_prod(const sdsl::bit_vector &first,
+                    const sdsl::bit_vector &second);
+
+void call_ones(const sdsl::bit_vector &vector,
+               const std::function<void(uint64_t)> &callback);
+
 #endif // __BIT_VECTOR_HPP__

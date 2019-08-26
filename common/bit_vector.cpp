@@ -6,6 +6,29 @@
 #include "serialization.hpp"
 
 
+uint64_t inner_prod(const sdsl::bit_vector &first,
+                    const sdsl::bit_vector &second) {
+    assert(first.size() == second.size());
+
+    if (first.empty())
+        return 0;
+
+    const uint64_t *first_data = first.data();
+    const uint64_t *second_data = second.data();
+
+    uint64_t result = sdsl::bits::cnt((*first_data) & (*second_data));
+
+    for (typename sdsl::bit_vector::size_type i = 1; i < (first.capacity() >> 6); ++i) {
+        result += sdsl::bits::cnt(*(++first_data) & *(++second_data));
+    }
+    if (first.bit_size() & 0x3F) {
+        result -= sdsl::bits::cnt((*first_data) & (*second_data)
+                                    & (~sdsl::bits::lo_set[first.bit_size() & 0x3F]));
+    }
+    return result;
+}
+
+
 uint64_t bit_vector::rank0(uint64_t id) const {
     return std::min(id + 1, size()) - rank1(id);
 }
