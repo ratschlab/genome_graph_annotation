@@ -5,7 +5,6 @@ Sparse binary relation representations for genome graphs annotations
 ### Reference
 > Mikhail Karasikov, Harun Mustafa, Amir Joudaki, Sara Javadzadeh-No, Gunnar Rätsch, and André Kahles. Sparse Binary Relation Representations for Genome Graph Annotation. _RECOMB 2019_. https://doi.org/10.1007/978-3-030-17083-7_8.
 
-
 This repository implements the following schemes for representing graph annotation:
 * Column-major compressed
 * Row-major flat
@@ -14,6 +13,8 @@ This repository implements the following schemes for representing graph annotati
 * BRWT
 * Multi-BRWT
 * ...
+
+### This repository is no longer maintained. Check out the [MetaGraph](http://github.com/ratschlab/metagraph) project for a significantly optimized and scaled-up implementation of Multi-BRWT as well as many other graph annotation representations.
 
 As an underlying graph structure, the following representations are implemented:
 1. Hash-based de Bruijn graph
