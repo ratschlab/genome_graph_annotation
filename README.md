@@ -3,7 +3,7 @@
 Sparse binary relation representations for genome graphs annotations
 
 ### Reference
-> Mikhail Karasikov, Harun Mustafa, Amir Joudaki, Sara Javadzadeh-No, Gunnar Rätsch, and André Kahles. Sparse Binary Relation Representations for Genome Graph Annotation. _RECOMB 2019_. https://doi.org/10.1007/978-3-030-17083-7_8.
+> Mikhail Karasikov, Harun Mustafa, Amir Joudaki, Sara Javadzadeh-No, Gunnar Rätsch, and André Kahles. Sparse Binary Relation Representations for Genome Graph Annotation. Apr 2020. _Journal of Computational Biology_, 27(4), 626-639. http://doi.org/10.1089/cmb.2019.0324
 
 This repository implements the following schemes for representing graph annotation:
 * Column-major compressed
